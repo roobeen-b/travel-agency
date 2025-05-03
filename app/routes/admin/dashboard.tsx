@@ -1,5 +1,17 @@
+import { Header } from "components";
+
 const Dashboard = () => {
-  return <div>Dashboard</div>;
+  const user = { name: "Rubin" };
+
+  return (
+    <main className="dashboard wrapper">
+      <Header
+        title={`Welcome ${user?.name ?? "Guest"} 👋`}
+        description="Track your travels and popular destinations in real time"
+      />
+      Dashboard page contents
+    </main>
+  );
 };
 
 export default Dashboard;
