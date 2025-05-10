@@ -1,10 +1,10 @@
-import { useState } from "react";
 import { Link, redirect } from "react-router";
 import { ButtonComponent } from "@syncfusion/ej2-react-buttons";
 import { TextBoxComponent } from "@syncfusion/ej2-react-inputs";
 
 import { account } from "~/appwrite/client";
-import { loginUserWithEmailAndPassword } from "~/appwrite/auth";
+import { createUserWithEmailAndPassword } from "~/appwrite/auth";
+import { useState } from "react";
 
 export async function clientLoader() {
   try {
@@ -15,13 +15,12 @@ export async function clientLoader() {
   }
 }
 
-const initial_state = {
-  email: "",
-  password: "",
-};
-
-const SignIn = () => {
-  const [formData, setFormData] = useState(initial_state);
+const SignUp = () => {
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    password: "",
+  });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -33,14 +32,11 @@ const SignIn = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const res = await loginUserWithEmailAndPassword(
+    await createUserWithEmailAndPassword(
       formData.email,
-      formData.password
+      formData.password,
+      formData.name
     );
-    if (res) {
-      setFormData(initial_state);
-      redirect("/");
-    }
   };
 
   return (
@@ -63,12 +59,21 @@ const SignIn = () => {
               Start Your Travel Journey
             </h2>
             <p className="p-18-regular text-center text-gray-100 !leading-7">
-              Sign in with Google to manage destinations, itineraries, and user
-              activity with ease.
+              Sign up to manage destinations, itineraries, and user activity
+              with ease.
             </p>
           </article>
 
           <form method="post" onSubmit={handleSubmit}>
+            <label htmlFor="name">Name</label>
+            <TextBoxComponent
+              type="name"
+              name="name"
+              value={formData.name}
+              onChange={handleChange}
+              placeholder="Enter name"
+              className="w-full p-2  border border-gray-300 !rounded-[5px]"
+            />
             <label htmlFor="email">Email</label>
             <TextBoxComponent
               type="email"
@@ -93,36 +98,20 @@ const SignIn = () => {
               iconCss="e-search-icon"
               className="button-class !h-11 !w-full mt-2"
             >
-              <span className="p-18-semibold text-white">Sign in</span>
+              <span className="p-18-semibold text-white">Sign Up</span>
             </ButtonComponent>
           </form>
 
           <span className="mt-2">
-            Don't have an account?{" "}
-            <Link to="/sign-up" className="underline text-blue-500">
-              Sign Up
+            Already have an account?{" "}
+            <Link to="/sign-in" className="underline text-blue-500">
+              Sign In
             </Link>
           </span>
-
-          {/* <ButtonComponent
-            type="button"
-            iconCss="e-search-icon"
-            onClick={loginWithGoogle}
-            className="button-class !h-11 !w-full mt-2"
-          >
-            <img
-              alt="google"
-              className="size-5"
-              src="/assets/icons/google.svg"
-            />
-            <span className="p-18-semibold text-white">
-              Sign in with Google
-            </span>
-          </ButtonComponent> */}
         </div>
       </section>
     </main>
   );
 };
 
-export default SignIn;
+export default SignUp;
