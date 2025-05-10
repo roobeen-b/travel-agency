@@ -2,7 +2,7 @@ import { ID, OAuthProvider, Query } from "appwrite";
 import { account, appwriteConfig, database } from "./client";
 import { redirect } from "react-router";
 
-export const loginWithGoogle = async () => {
+const loginWithGoogle = async () => {
   try {
     account.createOAuth2Session(OAuthProvider.Google);
   } catch (error) {
@@ -10,7 +10,7 @@ export const loginWithGoogle = async () => {
   }
 };
 
-export const logoutUser = async () => {
+const logoutUser = async () => {
   try {
     await account.deleteSession("current");
   } catch (error) {
@@ -18,7 +18,7 @@ export const logoutUser = async () => {
   }
 };
 
-export const getUser = async () => {
+const getUser = async () => {
   try {
     const user = await account.get();
     if (!user) return redirect("/sign-in");
@@ -39,7 +39,7 @@ export const getUser = async () => {
   }
 };
 
-export const getGooglePicture = async (accessToken: string) => {
+const getGooglePicture = async (accessToken: string) => {
   try {
     const response = await fetch(
       "https://people.googleapis.com/v1/people/me?personFields=photos",
@@ -57,7 +57,7 @@ export const getGooglePicture = async (accessToken: string) => {
   }
 };
 
-export const storeUserData = async () => {
+const storeUserData = async () => {
   try {
     const user = await account.get();
     if (!user) throw new Error("User not found");
@@ -85,7 +85,7 @@ export const storeUserData = async () => {
   }
 };
 
-export const getExistingUser = async (id: string) => {
+const getExistingUser = async (id: string) => {
   try {
     const { documents, total } = await database.listDocuments(
       appwriteConfig.databaseId,
@@ -96,4 +96,42 @@ export const getExistingUser = async (id: string) => {
   } catch (error) {
     console.log("Error getting existing user: ", error);
   }
+};
+
+const createUserWithEmailAndPassword = async (
+  email: string,
+  password: string,
+  name: string = ""
+) => {
+  try {
+    const res = await account.create(ID.unique(), email, password, name);
+    if (res?.status) {
+      await loginUserWithEmailAndPassword(email, password);
+    }
+  } catch (error) {
+    console.log("Error while creating new user: ", error);
+  }
+};
+
+const loginUserWithEmailAndPassword = async (
+  email: string,
+  password: string
+) => {
+  try {
+    const res = await account.createEmailPasswordSession(email, password);
+    return res;
+  } catch (error) {
+    console.log("Error while log in in: ", error);
+  }
+};
+
+export {
+  getUser,
+  logoutUser,
+  storeUserData,
+  loginWithGoogle,
+  getExistingUser,
+  getGooglePicture,
+  loginUserWithEmailAndPassword,
+  createUserWithEmailAndPassword,
 };
