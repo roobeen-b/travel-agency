@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, redirect } from "react-router";
+import { Link, redirect, useNavigate } from "react-router";
 import { ButtonComponent } from "@syncfusion/ej2-react-buttons";
 import { TextBoxComponent } from "@syncfusion/ej2-react-inputs";
 
@@ -21,6 +21,7 @@ const initial_state = {
 };
 
 const SignIn = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState(initial_state);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -39,7 +40,7 @@ const SignIn = () => {
     );
     if (res) {
       setFormData(initial_state);
-      redirect("/");
+      navigate("/");
     }
   };
 
