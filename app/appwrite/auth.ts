@@ -105,9 +105,7 @@ const createUserWithEmailAndPassword = async (
 ) => {
   try {
     const res = await account.create(ID.unique(), email, password, name);
-    if (res?.status) {
-      await loginUserWithEmailAndPassword(email, password);
-    }
+    return res;
   } catch (error) {
     console.log("Error while creating new user: ", error);
   }

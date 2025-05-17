@@ -1,9 +1,12 @@
-import { Link, redirect } from "react-router";
+import { Link, redirect, useNavigate } from "react-router";
 import { ButtonComponent } from "@syncfusion/ej2-react-buttons";
 import { TextBoxComponent } from "@syncfusion/ej2-react-inputs";
 
 import { account } from "~/appwrite/client";
-import { createUserWithEmailAndPassword } from "~/appwrite/auth";
+import {
+  createUserWithEmailAndPassword,
+  loginUserWithEmailAndPassword,
+} from "~/appwrite/auth";
 import { useState } from "react";
 
 export async function clientLoader() {
@@ -16,6 +19,7 @@ export async function clientLoader() {
 }
 
 const SignUp = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -32,11 +36,22 @@ const SignUp = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    await createUserWithEmailAndPassword(
+    const signupRes = await createUserWithEmailAndPassword(
       formData.email,
       formData.password,
       formData.name
     );
+
+    if (signupRes?.status) {
+      const res = await loginUserWithEmailAndPassword(
+        formData.email,
+        formData.password
+      );
+      if (res) {
+        setFormData({ name: "", email: "", password: "" });
+        navigate("/");
+      }
+    }
   };
 
   return (
